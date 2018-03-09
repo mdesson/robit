@@ -61,23 +61,31 @@ def select_direction(input_list):
 def pathfind():
     options = distance_options(look_around())
     turn_direction = select_direction(options)
+    print("Turn Direction is:", turn_direction)
 
     if turn_direction[0] > stopping_distance:
+        print("Best distance is {} and greater than stopping distance {}.\nTurning {} degrees."
+              .format(turn_direction[0], stopping_distance, 90-turn_direction[1]))
         robot.turn_degrees(90-turn_direction[1])
         robot.drive_cm(turn_direction[0])
         explore()
     elif turn_direction <= stopping_distance:
+        print("Best distance is {} and less than or euqal to stopping distance {}.\nTurning around."
+              .format(turn_direction[0], stopping_distance, turn_direction[1]))
         robot.turn_degrees(180)
         explore()
     else:
+        print("Possible Error. turn_drection is:", turn_direction)
         explore()
 
 
 def explore():
+    print("Exploring...")
     robot.forward()
     while True:
         try:
             if read_distance() <= stopping_distance:
+                print("Stopping and pathfinding...")
                 robot.stop()
                 pathfind()
 
@@ -88,4 +96,5 @@ def explore():
 
 
 if __name__ == "__main__":
+    s.rotate_servo(84)
     explore()
