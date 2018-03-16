@@ -8,9 +8,12 @@ ds = robot.init_distance_sensor()
 
 # Numbers need to be recalculated when stopping_distance is changed so robot can fit through area in front of it
 # Robot is ~15.31cm, requiring a 45 degree width to fit through an area 20cm in front of it
+# servo_offset is to properly center the output when 90 != center. 
+# stopping_offset increases stopping distance by amount of time it takes to stop so that robot stops at correct distance
 angle = [x*5 for x in range(1, 37)]  # 0 to 180 in increments of 5 degrees
 stopping_distance = 20
-
+servo_offset = 6
+stopping_offset = 2
 
 def read_distance():  # Compensates for faulty sensor readings at >200cm distances causing tiny readings
     a = ds.read()
@@ -66,13 +69,13 @@ def pathfind():
     if turn_direction[0] > stopping_distance:
         print("Best distance is {} and greater than stopping distance {}.\nTurning {} degrees."
               .format(turn_direction[0], stopping_distance, 90-turn_direction[1]))
-        robot.turn_degrees(90-turn_direction[1])
+        robot.turn_degrees(90-servo_offset-turn_direction[1], blocking=True)
         robot.drive_cm(turn_direction[0])
         explore()
-    elif turn_direction <= stopping_distance:
+    elif turn_direction[0] <= stopping_distance:
         print("Best distance is {} and less than or euqal to stopping distance {}.\nTurning around."
               .format(turn_direction[0], stopping_distance, turn_direction[1]))
-        robot.turn_degrees(180)
+        robot.turn_degrees(180-servo_offset, blocking=True)
         explore()
     else:
         print("Possible Error. turn_drection is:", turn_direction)
